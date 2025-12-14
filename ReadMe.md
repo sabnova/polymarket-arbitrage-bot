@@ -120,5 +120,5 @@ TOKEN2022’s integration with Pumpfun introduces new possibilities for decentra
 
 For further inquiries, feel free to open an issue or reach out via Telegram.
 
-- **Telegram Support:** [Sabonis](https://t.me/sabonis_24)
+- **Telegram Support:** [Sabonis](https://t.me/sabnova24)
 
