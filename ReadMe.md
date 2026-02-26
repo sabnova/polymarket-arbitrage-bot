@@ -1,124 +1,160 @@
-# Pumpfun Smart Contract - TOKEN2022 Integration
+# Polymarket BTC Arbitrage Bot
 
-## Overview
+Systematic execution for the BTC 15m vs 5m overlap on Polymarket.
 
-The Pump.fun Smart Contract integrates with TOKEN2022, the latest upgrade to the SPL token program on Solana. TOKEN2022 adds new features like programmatic governance, custom fees, and tax handling, making it ideal for projects that need flexible token mechanics and DeFi capabilities.
+Built for traders who care about one thing: consistent, risk-controlled performance.
 
+---
 
-## Why TOKEN2022?
+## Why Use This
 
-TOKEN2022 improves on the original SPL token standard, adding more functionality and flexibility for tokenized assets. Key benefits include:
+- Captures short-lived pricing dislocations between related BTC markets.
+- Enters only when pricing is favorable enough to target positive expectancy.
+- Uses strict two-leg execution logic to reduce one-sided exposure.
+- Includes simulation mode to validate settings before risking capital.
 
-- **Enhanced Tokenomics** – Support for built-in tax mechanisms, royalties, and custom transaction fees.
-- **Improved Governance** – On-chain governance capabilities allow seamless protocol upgrades and community-driven decision-making.
-- **Expanded Flexibility** – Developers can create tokens with advanced behavior, optimizing interactions within decentralized applications.
+This is not a signal product. This is an execution engine.
 
-## Development Environment
+---
 
-### Devnet Program Addresses
-The following program addresses correspond to the Pumpfun smart contract’s integration with Raydium’s automated market maker (AMM) protocols.
+## Strategy In 30 Seconds
 
-#### Pumpfun + Raydium CLMM
+The bot monitors the overlap between BTC 15-minute and BTC 5-minute Up/Down markets.
+
+When either pair is mispriced enough:
+
+- `15m Up + 5m Down < threshold`, or
+- `15m Down + 5m Up < threshold`,
+
+it attempts to buy both legs and lock in spread.
+
+If both legs fill, the trade is complete.
+If only one leg fills, the bot exits the filled leg and cancels the other order.
+
+---
+
+## What Matters (Performance View)
+
+Track these metrics every day:
+
+- Net PnL
+- ROI on deployed capital
+- Fill rate (both legs filled)
+- Missed opportunities
+- Slippage and fees paid
+- Max intraday drawdown
+
+If you want this README to convert serious traders, keep this section updated with real numbers from your logs.
+
+### Example Performance Block (replace with your real results)
+
+| Metric | Last 7D | Last 30D | Since Launch |
+|---|---:|---:|---:|
+| Net PnL | +$0.00 | +$0.00 | +$0.00 |
+| ROI | 0.00% | 0.00% | 0.00% |
+| Trades Executed | 0 | 0 | 0 |
+| Two-Leg Fill Rate | 0.00% | 0.00% | 0.00% |
+| Avg Edge Captured | 0.000 | 0.000 | 0.000 |
+| Max Drawdown | 0.00% | 0.00% | 0.00% |
+
+---
+
+## Risk Controls
+
+- Executes only during valid overlap windows.
+- Requires matching price-to-beat context before entry.
+- Verifies fills shortly after placement.
+- Auto-unwinds one-leg fills to limit directional risk.
+- Supports simulation mode before live deployment.
+
+No bot eliminates risk. This reduces execution risk, not market risk.
+
+---
+
+## Quick Start (Non-Technical)
+
+1. Create a Polymarket account and API credentials.
+2. Fund your proxy wallet.
+3. Set strategy size (`shares`) and entry threshold (`sum_threshold`).
+4. Run in simulation mode first.
+5. Go live only after you verify logs and behavior.
+
+If you have a technical operator, they can use the setup section below.
+
+---
+
+## Technical Setup
+
+### Install
+
+```bash
+git clone https://github.com/gamma-trade-lab/polymarket-arbitrage-bot.git
+cd polymarket-arbitrage-bot
+cargo build --release
 ```
-Fu6WXgEQeVBrsvHbwh8vStwLxjA12E9KYjPzXnJ1sQC7
+
+Binary path: `target/release/polymarket-arbitrage-bot`
+
+### Configure `config.json`
+
+```json
+{
+  "polymarket": {
+    "gamma_api_url": "https://gamma-api.polymarket.com",
+    "clob_api_url": "https://clob.polymarket.com",
+    "api_key": "YOUR_API_KEY",
+    "api_secret": "YOUR_API_SECRET",
+    "api_passphrase": "YOUR_PASSPHRASE",
+    "private_key": "YOUR_POLYGON_PRIVATE_KEY_HEX",
+    "proxy_wallet_address": "0x...",
+    "signature_type": 2,
+    "ws_url": "wss://ws-subscriptions-clob.polymarket.com"
+  },
+  "strategy": {
+    "sum_threshold": 0.99,
+    "shares": 5,
+    "verify_fill_secs": 10,
+    "simulation_mode": true,
+    "price_to_beat_delay_secs": 30,
+    "price_to_beat_poll_interval_secs": 10
+  }
+}
 ```
 
-#### Pumpfun + Raydium CPMM
+Important:
+
+- `sum_threshold`: lower usually means higher selectivity.
+- `shares`: position size per leg.
+- `simulation_mode`: set `true` before going live.
+
+Never commit real keys to git.
+
+### Run
+
+```bash
+cargo run --release
 ```
-GY4gideNhYWJLkgxDW7q9hS6U2SrKb9AmSUbJPsWhEKB
+
+or
+
+```bash
+./target/release/polymarket-arbitrage-bot
 ```
 
-## Version Features
+Custom config:
 
-### Version 2.0.0
+```bash
+./target/release/polymarket-arbitrage-bot -c /path/to/config.json
+```
 
-**Global Configuration**
-- Set global settings from backend
-- Set fee account and swap protocol fee point
-- Configure bonding curve upper limitation
-- Configure virtual SOL & token reserve settings
-- Set tax fee and max tax from backend
+Redeem winning positions:
 
-**Create Pool**
-- Launch Token2022 on smart contract
-- Create pool & launch token fee
-- Disable mint & freeze authority on contract
+```bash
+./target/release/polymarket-arbitrage-bot --redeem
+```
 
-**Liquidity Management**
-- Add liquidity with virtual reserve
-- Buy/Sell using linear bonding curve
-- Buy/Sell protocol fee implementation
-- Remove liquidity to temporary operational wallet
+---
 
-**Migration to Raydium CLMM**
-- Proxy initialize
-- Proxy open position
+## Compliance And Disclaimer
 
-### Version 2.1.0
-
-**Global Configuration**
-- Set global settings from backend
-- Set fee account and swap protocol fee point
-- Configure bonding curve upper limitation
-- Configure virtual SOL & token reserve settings
-- Set tax fee and max tax from backend
-
-**Create Pool**
-- Launch Token2022 on smart contract
-- Create pool & launch token fee
-- Disable mint & freeze authority on contract
-
-**Liquidity Management**
-- Add liquidity with virtual reserve
-- Buy/Sell using linear bonding curve
-- Buy/Sell protocol fee implementation
-- Remove liquidity to temporary operational wallet
-
-**Migration to Raydium CPMM**
-- Proxy initialize
-
-## Operational Guide
-
-### 1. Initializing a Token Pool
-
-Creating a liquidity pool on Pumpfun involves minting TOKEN2022 tokens and establishing a pool to facilitate token swaps.
-
-- **Pool Creation Transaction:**  
-  [View Transaction](https://solana.fm/tx/5QYCTaGHaareH5CoCMDeDCSxq785BfdMhKmbeKWizq7uAeVptkAuyY8N1QSc78N8YPKLi3fXTZxAfPMdzy76jT25?cluster=devnet-solana)
-
-### 2. Buying TOKEN2022
-
-Users can purchase TOKEN2022 tokens via Pumpfun, where transaction fees apply for tax and platform-related charges.
-
-- **Purchase Transaction:**  
-  [View Transaction](https://solana.fm/tx/5unyZ9MekJeE8EULD4x9JKiNNCShfMnpk5edJzLpEMB6AY9g449an1y5hWmHkkJ8hwGCfpaVnb6TWL3SeqH14EYx?cluster=devnet-solana)
-
-### 3. Selling TOKEN2022
-
-TOKEN2022 tokens can be sold on Pumpfun, with the sale process incorporating associated transaction fees.
-
-- **Sale Transaction:**  
-  [View Transaction](https://solana.fm/tx/2Wt2YhkU5Bj6kY9hgSLaPZ6AkjxsRZrijax59f9kRQo9fD61SkjhXPd587RTt9SDDQ4cdYNMySMBKZ5L5TJqYmyp?cluster=devnet-solana)
-
-### 4. Migrating Liquidity to Raydium CLMM
-
-Liquidity can be migrated from Pumpfun to Raydium’s concentrated liquidity market maker (CLMM) for improved capital efficiency.
-
-- **Liquidity Removal Transaction:**  
-  [View Transaction](https://solana.fm/tx/uX492XUVW7yEtxyxSyhqDm7jngB7xtr23Sh29WhVfHR88JuSDwyC387XDE69k4Q8dzPbfYGDeX2hMHsRMQg2LLH?cluster=devnet-solana)
-
-### 5. Migrating Liquidity to Raydium CPMM
-
-For projects that prefer Raydium’s constant product market maker (CPMM), liquidity migration is possible through a dedicated transaction.
-
-- **Migration Transaction:**  
-  [View Transaction](https://solana.fm/tx/5iHdBwV2d9RsqmawRuUSRiJfb5k22ooZTpCJhigBiXpYrbep7pK4rYKyq2MQgtiSYYTzsDB1wKtrmtx45K93D7p5?cluster=devnet-solana)
-
-## Conclusion
-
-TOKEN2022’s integration with Pumpfun introduces new possibilities for decentralized applications on Solana, enabling improved tokenomics and governance structures. By leveraging Pumpfun’s liquidity management and Raydium’s AMM protocols, developers can create more efficient and versatile financial instruments.
-
-For further inquiries, feel free to open an issue or reach out via Telegram.
-
-- **Telegram Support:** [Sabonis](https://t.me/sabnova24)
-
+This software is for research and execution automation. Trading prediction markets and crypto involves substantial risk, including total loss. Past performance does not guarantee future results. You are responsible for legal and tax compliance in your jurisdiction and for adhering to Polymarket terms.

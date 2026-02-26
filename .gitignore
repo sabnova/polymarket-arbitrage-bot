@@ -1,8 +1,7 @@
-.anchor
-.DS_Store
-target
+/target
 **/*.rs.bk
-node_modules
-package-lock.json
-test-ledger
-.yarn
+Cargo.lock
+config.json
+*.log
+history.toml
+.env
