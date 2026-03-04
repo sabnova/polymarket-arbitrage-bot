@@ -44,20 +44,6 @@ Track these metrics every day:
 - Slippage and fees paid
 - Max intraday drawdown
 
-If you want this README to convert serious traders, keep this section updated with real numbers from your logs.
-
-### Example Performance Block (replace with your real results)
-
-| Metric | Last 7D | Last 30D | Since Launch |
-|---|---:|---:|---:|
-| Net PnL | +$0.00 | +$0.00 | +$0.00 |
-| ROI | 0.00% | 0.00% | 0.00% |
-| Trades Executed | 0 | 0 | 0 |
-| Two-Leg Fill Rate | 0.00% | 0.00% | 0.00% |
-| Avg Edge Captured | 0.000 | 0.000 | 0.000 |
-| Max Drawdown | 0.00% | 0.00% | 0.00% |
-
----
 
 ## Risk Controls
 
